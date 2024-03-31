@@ -5,7 +5,7 @@ library(tidyr)
 library(ggplot2)
 
 ## Load the dataset
-sleep_data <- read.csv("Sleep_Efficiency.csv")
+sleep_data <- read.csv("https://raw.githubusercontent.com/wsl0917/stat306-group-project/main/Sleep_Efficiency.csv")
 
 ## View the summary of the dataset 
 head(sleep_data)
