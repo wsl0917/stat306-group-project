@@ -1,11 +1,13 @@
-## Instal the packages 
+# Instal the packages 
 install.packages("corrplot")
+install.packages("GGally")
 ## Load the packages
 options(warn.conflicts = FALSE)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(corrplot)
+library(GGally)
 
 
 ## Load the dataset
@@ -96,3 +98,90 @@ ggplot(sleep_data, aes(x = Caffeine.consumption, y = Sleep.efficiency)) + geom_p
 
 # Scatter plot with a smooth line for age and sleep efficiency
 ggplot(sleep_data, aes(x = Age, y = Sleep.efficiency)) + geom_point() + geom_smooth(method = "lm", color = "red") + theme_minimal() + labs(title = "Sleep Efficiency vs. Age")
+
+
+
+#corr of some variables
+ggpairs(sleep_data) + 
+  theme_bw() +  # Use a black and white theme for better readability
+  ggtitle("Correlation of every continuous variable with the rest")
+
+
+
+###Model Building + Diagnostic Plots
+
+
+#linear
+model_lm <- lm(Sleep.efficiency ~ Age + Gender + Caffeine.consumption + Alcohol.consumption + Smoking.status + Exercise.frequency + REM.sleep.percentage + Deep.sleep.percentage + Light.sleep.percentage, data = sleep_data)
+
+summary(model_lm)
+par(mfrow=c(2,2))
+plot(model_lm)
+
+
+# Polynomial
+# Polynomial regression model for 2nd degree polynomial
+model_poly <- lm(Sleep.efficiency ~ poly(Age, 2) + Gender + Caffeine.consumption + Alcohol.consumption + Smoking.status + Exercise.frequency + REM.sleep.percentage + Deep.sleep.percentage + Light.sleep.percentage, data = sleep_data)
+
+# Summary to understand performance
+summary(model_poly)
+# Assuming model_poly is your polynomial regression model
+par(mfrow=c(2,2))
+plot(model_poly)
+
+
+
+# library(mgcv)
+# # GAM model
+# model_gam <- gam(Sleep.efficiency ~ s(Age) + Gender + s(Caffeine.consumption) + s(Alcohol.consumption) + Smoking.status + s(Exercise.frequency) + s(REM.sleep.percentage) + s(Deep.sleep.percentage) + s(Light.sleep.percentage), data = sleep_data)
+
+# Summary
+# summary(model_gam)
+# library(mgcv)
+# # Assuming model_gam is your GAM model
+# gam.check(model_gam)
+
+install.packages("glmnet")
+library(glmnet)
+
+# Assuming sleep_data matrix is prepared and sleep_efficiency_vector is created
+data_matrix <- model.matrix(Sleep.efficiency ~ ., sleep_data)[,-1]  # Remove intercept
+sleep_efficiency_vector <- sleep_data$Sleep.efficiency
+
+# Lasso Regression
+model_lasso <- glmnet(data_matrix, sleep_efficiency_vector, alpha = 1)
+
+# Ridge Regression
+model_ridge <- glmnet(data_matrix, sleep_efficiency_vector, alpha = 0)
+
+library(glmnet)
+# Assuming model_lasso is your Lasso model
+
+# Plotting coefficient paths
+plot(model_lasso, xvar = "lambda")
+plot(model_ridge, , xvar = "lambda")
+
+
+install.packages("randomForest")
+library(randomForest)
+# Random Forest model
+model_rf <- randomForest(Sleep.efficiency ~ ., data = sleep_data)
+
+# View importance of variables
+importance(model_rf)
+
+# Plotting variable importance
+varImpPlot(model_rf)
+
+# Plotting model error as more trees are added
+plot(model_rf)
+
+
+install.packages("caret")
+library(caret)
+
+# Example for cross-validation using caret package
+fitControl <- trainControl(method = "cv", number = 10)
+model_cv <- train(Sleep.efficiency ~ ., data = sleep_data, method = "glmnet", trControl = fitControl)
+
+
