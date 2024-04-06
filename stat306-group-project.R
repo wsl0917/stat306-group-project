@@ -23,11 +23,6 @@ summary(sleep_data)
 sleep_data <- select(sleep_data, -Bedtime, -Wakeup.time)
 head(sleep_data)
 tail(sleep_data)
-# The decision to remove the "Bedtime" and "Wakeup time" columns from the
-# dataset is because these variables might not directly influence sleep 
-# efficiency and including them could create redundancy. Sleep efficiency 
-# measures how well someone sleeps during a specific time period, which is
-# already captured by other variables like total sleep time.
 
 # We set "Male" as the baseline category for the categorical variable "Gender"
 # in the regression analysis.
